@@ -27,7 +27,7 @@
 
     <main>
       <form>
-        <button type="submit">Pay with Crypto</button>
+        <button id="checkout-button" type="submit">Pay with Crypto</button>
       </form>
     </main>
 
@@ -39,8 +39,27 @@
     <script src="https://code.jquery.com/jquery-2.2.1.min.js"
             integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
             crossorigin="anonymous"></script>
-    <script src="/client.js"></script>
+    <script type="module">
+    import SimplePayment from "https://unpkg.com/payment-components@0.1.0/dist/payment-components.esm.production.js";
+     
+   async function checkout() {
+           const response = await fetch('/pay', { method: 'POST'})
+           const data = await response.json()
+           console.log('async' , data);
+          return { signedRequestData: data}
 
+   }
+  // weird works if called a init instead of waiting for the event
+  //checkout();
+  document.addEventListener("DOMContentLoaded", function() {
+    const sp = new SimplePayment(async() => await checkout(), {
+      redirectUrl: "http://localhost:9080/?txId=",
+      networkId: 4,
+    });
+
+    sp.init("#checkout-button");
+  });
+    </script>
   </body>
 </html>
 
